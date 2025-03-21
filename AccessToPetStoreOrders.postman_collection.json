@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "f4bd138e-2e8d-41c1-9da9-be3525a0592a",
+		"name": "AccessToPetStoreOrders",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30552280"
+	},
+	"item": [
+		{
+			"name": "PlaceAnOrderForPet",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"//Generate Random number to create Id\r",
+							"var randomNumber=Math.floor(Math.random()*100)+1;\r",
+							"pm.environment.set(\"randomNumber\",randomNumber);\r",
+							"console.log(\"Generated Random number:\"+randomNumber);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"console.info(pm.environment.get(\"randomNumber\"));\r",
+							"\r",
+							"//Id Check\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"randomNumber\"));\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": {{randomNumber}},\r\n  \"petId\": 198772,\r\n  \"quantity\": 7,\r\n  \"shipDate\": \"2025-03-19T05:45:24.170Z\",\r\n  \"status\": \"approved\",\r\n  \"complete\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/store/order",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"store",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindPurchaseOrderById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Print test results according to status code\r",
+							"\r",
+							"pm.test(\"Status code ckeck with message\",function(){\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.info(pm.environment.get(\"randomNumber\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/store/order/{{randomNumber}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"store",
+						"order",
+						"{{randomNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeletePurchaseOrderById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/store/order/{{randomNumber}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"store",
+						"order",
+						"{{randomNumber}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

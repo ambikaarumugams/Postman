@@ -1,0 +1,201 @@
+{
+	"info": {
+		"_postman_id": "bdc0dbeb-b83b-4f38-993e-01d26e22a489",
+		"name": "PetStoreSwaggerE2ETest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30552280"
+	},
+	"item": [
+		{
+			"name": "AddNewPetToTheStore",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"//Status code check\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"//Response time check\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"//Datatypes check\r",
+							"pm.test(\"Validate the response schema for the required fields and data types\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.id).to.be.a('number');\r",
+							"    pm.expect(responseData.category).to.be.an('object');\r",
+							"    pm.expect(responseData.category.id).to.be.a('number');\r",
+							"    pm.expect(responseData.category.name).to.be.a('string');\r",
+							"    pm.expect(responseData.name).to.be.a('string');\r",
+							"    pm.expect(responseData.photoUrls).to.be.an('array');\r",
+							"    responseData.photoUrls.forEach(photoUrl => {\r",
+							"        pm.expect(photoUrl).to.be.a('string');\r",
+							"    });\r",
+							"    pm.expect(responseData.tags).to.be.an('array');\r",
+							"    responseData.tags.forEach(tag => {\r",
+							"        pm.expect(tag).to.be.an('object');\r",
+							"        pm.expect(tag.id).to.be.a('number');\r",
+							"        pm.expect(tag.name).to.be.a('string');\r",
+							"    });\r",
+							"    pm.expect(responseData.status).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"//Key value check\r",
+							"pm.test(\"Check key-value pairs in the response\",function(){\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData.category.name).to.eql(\"Dogs\");\r",
+							"    pm.expect(responseData.status).to.eql(\"available\");\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check the text\",function(){\r",
+							"    console.info(pm.response.text());\r",
+							"    console.info(pm.response.json());\r",
+							" pm.expect(pm.response.text()).to.include(\"available\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//Generate Random number to create Id\r",
+							"\r",
+							"var randomNumber=Math.floor(Math.random()*100)+1;\r",
+							"pm.environment.set(\"randomNumber\",randomNumber);\r",
+							"\r",
+							"console.log(\"Generated Random number:\"+randomNumber);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": {{randomNumber}},\r\n  \"name\": \"doggie\",\r\n  \"category\": {\r\n    \"id\": 1,\r\n    \"name\": \"Dogs\"\r\n  },\r\n  \"photoUrls\": [\r\n    \"https://images.app.goo.gl/VyWFM8cZXqQ7Qeuw7\"\r\n  ],\r\n  \"tags\": [\r\n    {\r\n      \"id\": 11,\r\n      \"name\": \"Cat\"\r\n    }\r\n  ],\r\n  \"status\": \"available\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/pet",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pet"
+					]
+				},
+				"description": "### Create a New Pet\n\nThis endpoint allows you to create a new pet in the pet store.\n\n#### Request Body\n\n- `id` (integer) - The unique identifier for the pet.\n    \n- `name` (string) - The name of the pet.\n    \n- `category` (object) - The category of the pet, containing an `id` (integer) and a `name` (string).\n    \n- `photoUrls` (array of strings) - URLs of the pet's photos.\n    \n- `tags` (array of objects) - Tags associated with the pet, each containing an `id` (integer) and a `name` (string).\n    \n- `status` (string) - The status of the pet.\n    \n\n#### Response\n\nThe response will be in JSON format and will contain the schema for the created pet object.\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\"\n    },\n    \"category\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"id\": {\n          \"type\": \"integer\"\n        },\n        \"name\": {\n          \"type\": \"string\"\n        }\n      }\n    },\n    \"name\": {\n      \"type\": \"string\"\n    },\n    \"photoUrls\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"tags\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\": {\n            \"type\": \"integer\"\n          },\n          \"name\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"status\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "FindPetById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"//Response code check\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//To get nvironment variable\r",
+							"\r",
+							"console.info(pm.environment.get(\"randomNumber\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pet/{{randomNumber}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pet",
+						"{{randomNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeletePetById",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"//Status code check\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Response text check\r",
+							"pm.test(\"Body is correct\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"Pet deleted\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/pet/{{randomNumber}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"pet",
+						"{{randomNumber}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
